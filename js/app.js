@@ -87,7 +87,10 @@ function initApp() {
 // ============ SIDEBAR ============
 function toggleSidebar() {
   state.sidebarOpen = !state.sidebarOpen;
-  document.getElementById('sidebar').classList.toggle('open', state.sidebarOpen);
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('open', state.sidebarOpen);
+  if (overlay) overlay.classList.toggle('show', state.sidebarOpen);
   saveState();
 }
 
@@ -95,9 +98,11 @@ function handleOutsideClick(e) {
   if (state.sidebarOpen && window.innerWidth < 768) {
     const sidebar = document.getElementById('sidebar');
     const menuBtn = document.getElementById('menuBtn');
-    if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+    const overlay = document.getElementById('sidebarOverlay');
+    if (!sidebar.contains(e.target) && e.target !== menuBtn && e.target !== overlay) {
       state.sidebarOpen = false;
       sidebar.classList.remove('open');
+      if (overlay) overlay.classList.remove('show');
       saveState();
     }
   }
@@ -109,6 +114,8 @@ function navigateTo(view) {
   if (window.innerWidth < 768) {
     state.sidebarOpen = false;
     document.getElementById('sidebar').classList.remove('open');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (overlay) overlay.classList.remove('show');
   }
 
   // Update nav links
@@ -661,7 +668,7 @@ function showForceModal() {
   const postponeBtn = document.getElementById('forcePostponeBtn');
   if (state.postponesToday >= MAX_POSTPONES - 1) {
     postponeBtn.style.opacity = '0.5';
-    postponeBtn.textContent = '⏰ ' + t('ಇನ್ನು ಮುಂದೂಡಲಾಗದು','Cannot postpone further');
+    postponeBtn.innerHTML = '⏰ ' + t('ಇನ್ನು ಮುಂದೂಡಲಾಗದು','Cannot postpone further');
     postponeBtn.disabled = true;
   } else {
     postponeBtn.style.opacity = '1';

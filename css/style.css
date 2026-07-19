@@ -313,6 +313,7 @@ body { min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
     display: none;
   }
   .sidebar-overlay.show { display: block; }
+  .sidebar-overlay.show { display: block; }
 }
 
 /* ============ EMPTY STATE ============ */
