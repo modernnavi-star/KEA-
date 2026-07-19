@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme -->
+    <style name="Theme.KEAPrep" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#d4782f</item>
+        <item name="colorPrimaryVariant">#b85c1e</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#2e7d32</item>
+        <item name="colorSecondaryVariant">#1b5e20</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="android:statusBarColor">#1a0a00</item>
+        <item name="android:navigationBarColor">#1a0a00</item>
+        <item name="android:windowBackground">#faf7f0</item>
+    </style>
+
+    <!-- Splash theme (no action bar, full screen feel) -->
+    <style name="Theme.KEAPrep.Splash" parent="Theme.KEAPrep">
+        <item name="android:windowBackground">#1a0a00</item>
+        <item name="android:statusBarColor">#1a0a00</item>
+    </style>
+</resources>

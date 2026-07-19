@@ -57,14 +57,22 @@
 
 ## 📱 Installation
 
-### On Mobile (Android/iOS):
-1. Open `index.html` in Chrome/Safari
+### 🌐 Web App (Instant)
+1. Open **https://modernnavi-star.github.io/KEA-/** in Chrome
 2. Tap **"Add to Home Screen"** from browser menu
-3. App opens like a native app, works offline
+3. Opens like a native app, works offline
+
+### 📱 Android App (Build APK)
+```bash
+git clone https://github.com/modernnavi-star/KEA-.git
+# Open android/ folder in Android Studio
+# Build → Build APK
+# Install on your phone!
+```
+See [android/README.md](android/README.md) for detailed build instructions.
 
 ### On Desktop:
 1. Open `index.html` in any browser
-2. For best experience, use Chrome
 
 ---
 
