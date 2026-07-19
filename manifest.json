@@ -1,0 +1,14 @@
+{
+  "name": "KEA Group C Exam Prep - Karnataka VAO Study",
+  "short_name": "KEA Prep",
+  "description": "Karnataka Village Accountant & KEA Group C Exam Preparation - 16-Day Study Plan with bilingual lessons, quizzes & current affairs",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#faf7f0",
+  "theme_color": "#1a0a00",
+  "icons": [],
+  "lang": "kn",
+  "categories": ["education", "productivity"]
+}

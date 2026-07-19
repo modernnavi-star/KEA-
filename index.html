@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KEA Group C Exam Prep | ಕರ್ನಾಟಕ ಸ್ಪರ್ಧಾತ್ಮಕ ಪರೀಕ್ಷೆ</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#1a0a00">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<!-- SPLASH / LOADING -->
+<div id="splashScreen">
+  <div class="splash-inner">
+    <div class="splash-icon">📚</div>
+    <h1>KEA Group C</h1>
+    <p>ಕರ್ನಾಟಕ ಸ್ಪರ್ಧಾತ್ಮಕ ಪರೀಕ್ಷಾ ತಯಾರಿ</p>
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="appShell" style="display:none;">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <button class="icon-btn" id="menuBtn" onclick="toggleSidebar()">☰</button>
+      <h1 class="header-title">
+        <span data-lang="kn">📚 KEA ತಯಾರಿ</span>
+        <span data-lang="en">📚 KEA Prep</span>
+      </h1>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" onclick="toggleLang()" title="Toggle Language">🔤</button>
+      <button class="icon-btn" id="themeToggle" onclick="toggleTheme()">🌓</button>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="countdown-box" id="countdownBox">
+        <div class="countdown-label" data-lang="kn">📅 ಪರೀಕ್ಷೆಗೆ ಇನ್ನು</div>
+        <div class="countdown-label" data-lang="en">📅 Days Until Exam</div>
+        <div class="countdown-days" id="countdownDays">--</div>
+        <div class="countdown-date">Oct 4, 2026</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#dashboard" class="nav-link active" data-nav="dashboard">
+        <span class="nav-icon">🏠</span> <span data-lang="kn">ಡ್ಯಾಶ್‌ಬೋರ್ಡ್</span><span data-lang="en">Dashboard</span>
+      </a>
+      <a href="#studyplan" class="nav-link" data-nav="studyplan">
+        <span class="nav-icon">📅</span> <span data-lang="kn">ಅಧ್ಯಯನ ಯೋಜನೆ</span><span data-lang="en">Study Plan</span>
+      </a>
+      <a href="#lessons" class="nav-link" data-nav="lessons">
+        <span class="nav-icon">📖</span> <span data-lang="kn">ಪಾಠಗಳು</span><span data-lang="en">Lessons</span>
+      </a>
+      <a href="#quiz" class="nav-link" data-nav="quiz">
+        <span class="nav-icon">📝</span> <span data-lang="kn">ಕ್ವಿಜ್‌ಗಳು</span><span data-lang="en">Quizzes</span>
+      </a>
+      <a href="#currentaffairs" class="nav-link" data-nav="currentaffairs">
+        <span class="nav-icon">📰</span> <span data-lang="kn">ಪ್ರಚಲಿತ ಘಟನೆಗಳು</span><span data-lang="en">Current Affairs</span>
+      </a>
+      <a href="#paper1" class="nav-link" data-nav="paper1">
+        <span class="nav-icon">📄</span> <span data-lang="kn">ಪೇಪರ್ 1 (GK)</span><span data-lang="en">Paper 1 (GK)</span>
+      </a>
+      <a href="#paper2" class="nav-link" data-nav="paper2">
+        <span class="nav-icon">💻</span> <span data-lang="kn">ಪೇಪರ್ 2 (ಭಾಷೆ+ಕಂಪ್ಯೂಟರ್)</span><span data-lang="en">Paper 2 (Lang+Computer)</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <small data-lang="kn">© 2026 KEA Exam Prep</small>
+      <small data-lang="en">© 2026 KEA Exam Prep</small>
+      <button class="btn-sm" onclick="resetProgress()" style="margin-top:6px;">🔄 <span data-lang="kn">ಮರುಹೊಂದಿಸಿ</span><span data-lang="en">Reset</span></button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="mainContent">
+    <!-- Views get rendered here -->
+  </main>
+
+  <!-- FORCE LEARNING MODAL -->
+  <div class="modal-overlay" id="forceModalOverlay">
+    <div class="modal force-modal" id="forceModal">
+      <div class="force-modal-icon">⏰</div>
+      <h2 id="forceModalTitle" data-lang="kn">ಇಂದಿನ ಅಧ್ಯಯನ ಸಮಯ!</h2>
+      <h2 id="forceModalTitle" data-lang="en">Time for Today's Study!</h2>
+      <p id="forceModalBody"></p>
+      <div class="force-modal-actions">
+        <button class="btn btn-primary btn-lg" id="forceStudyBtn" onclick="startTodaysLesson()">
+          📖 <span data-lang="kn">ಈಗ ಅಧ್ಯಯನ ಮಾಡಿ</span><span data-lang="en">Study Now</span>
+        </button>
+        <button class="btn btn-outline" id="forcePostponeBtn" onclick="postponeStudy()">
+          ⏳ <span data-lang="kn">ಸ್ವಲ್ಪ ಹೊತ್ತು ಮುಂದೂಡಿ</span><span data-lang="en">Postpone Briefly</span>
+        </button>
+      </div>
+      <p class="postpone-count" id="postponeCount"></p>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+</div>
+
+<script src="./js/data.js"></script>
+<script src="./js/current-affairs.js"></script>
+<script src="./js/app.js"></script>
+</body>
+</html>
