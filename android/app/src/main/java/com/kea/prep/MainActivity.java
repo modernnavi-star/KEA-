@@ -1,17 +1,13 @@
 package com.kea.prep;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -30,10 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeRefresh;
 
-    // Primary URL (GitHub Pages)
-    private static final String LIVE_URL = "https://modernnavi-star.github.io/KEA-/";
-
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,81 +39,73 @@ public class MainActivity extends AppCompatActivity {
         setupWebView();
         setupSwipeRefresh();
 
-        webView.loadUrl(LIVE_URL);
+        webView.loadUrl("file:///android_asset/app.html");
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     private void setupWebView() {
-        WebSettings settings = webView.getSettings();
+        WebSettings s = webView.getSettings();
 
-        // Enable core features
-        settings.setJavaScriptEnabled(true);
-        settings.setDomStorageEnabled(true);
-        settings.setDatabaseEnabled(true);
-        settings.setAllowFileAccess(true);
+        s.setJavaScriptEnabled(true);
+        s.setDomStorageEnabled(true);
+        s.setDatabaseEnabled(true);
+        s.setAllowFileAccess(true);
+        s.setAllowContentAccess(true);
 
-        // Enable localStorage
-        settings.setDatabasePath(getApplicationContext().getDir("database", Context.MODE_PRIVATE).getPath());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            s.setAllowFileAccessFromFileURLs(true);
+            s.setAllowUniversalAccessFromFileURLs(true);
+        }
 
-        // Performance
-        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        s.setUseWideViewPort(true);
+        s.setLoadWithOverviewMode(true);
+        s.setBuiltInZoomControls(false);
+        s.setDisplayZoomControls(false);
+        s.setLoadsImagesAutomatically(true);
+
+        s.setCacheMode(WebSettings.LOAD_NO_CACHE);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+            s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
             CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
         }
 
-        // Viewport
-        settings.setUseWideViewPort(true);
-        settings.setLoadWithOverviewMode(true);
-        settings.setSupportZoom(true);
-        settings.setBuiltInZoomControls(true);
-        settings.setDisplayZoomControls(false);
-
-        // WebViewClient
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 progressBar.setVisibility(View.VISIBLE);
-                super.onPageStarted(view, url, favicon);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 progressBar.setVisibility(View.GONE);
                 swipeRefresh.setRefreshing(false);
-                super.onPageFinished(view, url);
             }
 
             @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+            public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError err) {
                 progressBar.setVisibility(View.GONE);
                 swipeRefresh.setRefreshing(false);
-                // Inject offline fallback
-                view.loadUrl("javascript:document.body.innerHTML='<div style=text-align:center;padding:40px><h2>📡 '+(navigator.language==='kn'?'ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ':'No Internet')+'</h2><p>'+(navigator.language==='kn'?'ದಯವಿಟ್ಟು ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ':'Please check your connection')+'</p></div>'");
-                super.onReceivedError(view, request, error);
             }
 
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                String url = request.getUrl().toString();
-                // Keep internal navigation in WebView, open external in browser
-                if (url.contains("github.io/KEA-") || url.startsWith("file://") || url.startsWith("about:")) {
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest req) {
+                String url = req.getUrl().toString();
+                if (url.startsWith("file://") || url.startsWith("about:") || url.startsWith("javascript:")) {
                     return false;
                 }
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                startActivity(intent);
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                } catch (Exception ignored) {}
                 return true;
             }
         });
 
-        // WebChromeClient for progress
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                if (newProgress < 100) {
+            public void onProgressChanged(WebView view, int progress) {
+                if (progress < 100) {
                     progressBar.setVisibility(View.VISIBLE);
-                    progressBar.setProgress(newProgress);
+                    progressBar.setProgress(progress);
                 } else {
                     progressBar.setVisibility(View.GONE);
                 }
@@ -131,31 +116,16 @@ public class MainActivity extends AppCompatActivity {
     private void setupSwipeRefresh() {
         swipeRefresh.setColorSchemeResources(
             android.R.color.holo_orange_dark,
-            android.R.color.holo_green_dark,
-            android.R.color.holo_blue_dark
+            android.R.color.holo_green_dark
         );
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (isNetworkAvailable()) {
-                    webView.reload();
-                } else {
-                    swipeRefresh.setRefreshing(false);
-                    Toast.makeText(MainActivity.this,
-                        getString(R.string.no_internet),
-                        Toast.LENGTH_SHORT).show();
-                }
+                webView.reload();
             }
         });
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-    }
-
-    // Handle back button
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
@@ -179,9 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (webView != null) {
-            webView.destroy();
-        }
+        if (webView != null) webView.destroy();
         super.onDestroy();
     }
 }
