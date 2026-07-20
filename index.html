@@ -110,33 +110,60 @@ var EXAM_DATE = new Date('2026-10-04T00:00:00+05:30');
 
 // ============ STATE ============
 var LS = 'kea4';
-let S = {lang:'kn',done:{},tp:{},scores:[],ppToday:0,ppDate:null};
-let quizState = null;
-let ppTimer = null;
+var S = {lang:'kn',done:{},tp:{},scores:[],ppToday:0,ppDate:null};
+var quizState = null;
+var ppTimer = null;
 
-try{let r=localStorage.getItem(LS);if(r){let d=JSON.parse(r);Object.assign(S,d)};let td=(new Date()).toISOString().slice(0,10);if(S.ppDate!==td){S.ppToday=0;S.ppDate=td}}catch(e){}
+// Safe storage wrapper — falls back to in-memory if localStorage throws
+var _mem = {};
+function _get(k) { try { return localStorage.getItem(k); } catch(e) { return _mem[k]||null; } }
+function _set(k,v) { try { localStorage.setItem(k,v); } catch(e) { _mem[k]=v; } }
 
-function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
-function L(){return S.lang}
-function T(kn,en){return L()==='kn'?kn:en}
-function cd(){return Math.max(0,Math.ceil((EXAM_DATE-new Date())/(86400000)))}
-function todayDay(){let d=Object.keys(S.done||{}).length;return Math.min(d+1,16)}
-function toast(m){let c=document.getElementById('toastFix');let e=document.createElement('div');e.className='toast-msg';e.textContent=m;c.appendChild(e);setTimeout(function(){e.remove()},2200)}
+(function initState() {
+  try {
+    var raw = _get(LS);
+    if (raw) {
+      var d = JSON.parse(raw);
+      for (var k in d) { if (d.hasOwnProperty(k)) S[k] = d[k]; }
+    }
+    var td = (new Date()).toISOString().slice(0,10);
+    if (S.ppDate !== td) { S.ppToday = 0; S.ppDate = td; }
+  } catch(e) {}
+})();
+
+function save() { try { _set(LS, JSON.stringify(S)); } catch(e) {} }
+function L() { return S.lang; }
+function T(kn, en) { return L() === 'kn' ? kn : en; }
+function cd() { return Math.max(0, Math.ceil((EXAM_DATE - new Date()) / 86400000)); }
+function todayDay() { var d = Object.keys(S.done || {}).length; return Math.min(d + 1, 16); }
+function toast(m) {
+  var c = document.getElementById('toastFix');
+  if (!c) return;
+  var e = document.createElement('div');
+  e.className = 'toast-msg';
+  e.textContent = m;
+  c.appendChild(e);
+  setTimeout(function() { e.remove(); }, 2200);
+}
 function toggleLang(){S.lang=S.lang==='kn'?'en':'kn';document.documentElement.setAttribute('data-lang',S.lang);save();nav(currentNav);toast(T('✅ Kannada','✅ English'))}
 
 // ============ NAVIGATION ============
-let currentNav = 'home';
+var currentNav = 'home';
 function nav(view){
   currentNav = view;
-  document.querySelectorAll('.bnav button').forEach(function(b){b.classList.remove('on')});
+  try {
+    var btns = document.querySelectorAll('.bnav button');
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('on');
+  } catch(e) {}
   var btn = document.getElementById('bn'+view.charAt(0).toUpperCase()+view.slice(1));
-  if(btn)btn.classList.add('on');
+  if (btn) btn.classList.add('on');
   var m = document.getElementById('main');
-  if(view==='home')showHome(m);
-  else if(view==='plan')showPlan(m);
-  else if(view==='quiz')showQuiz(m);
-  else if(view==='topics')showTopics(m);
-  else if(view==='news')showNews(m);
+  if (!m) return;
+  if (view === 'home') showHome(m);
+  else if (view === 'plan') showPlan(m);
+  else if (view === 'quiz') showQuiz(m);
+  else if (view === 'topics') showTopics(m);
+  else if (view === 'news') showNews(m);
   m.scrollTop = 0;
   updateCD();
 }
